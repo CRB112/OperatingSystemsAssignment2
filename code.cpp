@@ -24,9 +24,14 @@ int main() {
     start();
     //Bankers algo
     std::vector<int> ord = bankersAlgo();
+
+
+    //Printing
+    std::cout << "\nORDER: ";
     for (int i = 0; i < ord.size(); i++)
-        std::cout << ord[i];
+        std::cout << "P" << ord[i] << " ";
     
+    std::cout << std::endl << std::endl;
     return 0;
 }
 
@@ -65,25 +70,34 @@ void start() {
     }
     return;
 }
+//Finds deadlocks with bankers algorithm
 std::vector<int> bankersAlgo() {
     std::vector<int> order;
 
     while (!pcs.empty()) {
         bool progress = false;
 
+        //auto is used instead of std::unordered_map<int, std:tuple<std::vector<int>, std::vector>>>::iterator
+        //for ease of reading
         for (auto it = pcs.begin(); it != pcs.end(); ) {
             int pid = it->first;
+
+            //Grab values from process map
             std::vector<int> alloc = std::get<0>(it->second);
             std::vector<int> max = std::get<1>(it->second);
 
             bool canRun = true;
+            
+            //Looks through maxValues of current process to see if it fits
+            //Within available resources
             for (size_t i = 0; i < avl.size(); i++) {
                 if (max[i] - alloc[i] > avl[i]) {
                     canRun = false;
                     break;
                 }
             }
-
+            //If there are enough resources, add the process to the list
+            //And remove it from the map of processes to run
             if (canRun) {
                 order.push_back(pid);
                 for (size_t i = 0; i < avl.size(); i++)
@@ -95,7 +109,7 @@ std::vector<int> bankersAlgo() {
                 ++it;
             }
         }
-
+        //If reached end of process list without finding a process to run, deadlock detected
         if (!progress) {
             std::cerr << "Deadlock detected, cannot continue!\n";
             break;
