@@ -1,0 +1,106 @@
+#include <iostream>
+#include <vector>
+#include <tuple>
+#include <sstream>
+#include <unordered_map>
+#include <fstream>
+#include <string>
+
+//File to be input
+std::string filename = "input.txt";
+//Stores each process (key), and their allocated resources vs their max resources
+std::unordered_map<int, std::tuple<std::vector<int>, std::vector<int>>> pcs;
+//Stores running resource pool
+std::vector<int> avl;
+//Current running process #
+int curr = 0;
+
+void start();
+std::vector<int> bankersAlgo();
+
+
+int main() {
+    //Initializes all values
+    start();
+    //Bankers algo
+    std::vector<int> ord = bankersAlgo();
+    for (int i = 0; i < ord.size(); i++)
+        std::cout << ord[i];
+    
+    return 0;
+}
+
+//Reads values from input.txt and sets global values accordingly
+void start() {
+    std::ifstream file(filename);
+    
+    if (!file) {
+        std::cerr << "Could not open file: " << filename;
+        return;
+    }
+    std::string line;
+    while (std::getline(file, line)) {
+        std::vector<int> vals;
+        std::istringstream iss (line);
+        int val;
+
+        while(iss >> val)
+            vals.push_back(val);
+        
+        if (avl.empty()) {
+            avl = vals;
+            continue;
+        }
+        
+        size_t half = vals.size() / 2;
+        std::vector<int> alloc(vals.begin(), vals.begin() + half);
+        std::vector<int> max(vals.begin() + half, vals.end());
+        
+        if (alloc.size() != avl.size() || max.size() != avl.size()) {
+            std::cerr << "Invalid size on process: " << curr;
+            return;
+        }
+        pcs[curr] = {alloc, max};
+        curr++;
+    }
+    return;
+}
+std::vector<int> bankersAlgo() {
+    std::vector<int> order;
+
+    while (!pcs.empty()) {
+        bool progress = false;
+
+        for (auto it = pcs.begin(); it != pcs.end(); ) {
+            int pid = it->first;
+            std::vector<int> alloc = std::get<0>(it->second);
+            std::vector<int> max = std::get<1>(it->second);
+
+            bool canRun = true;
+            for (size_t i = 0; i < avl.size(); i++) {
+                if (max[i] - alloc[i] > avl[i]) {
+                    canRun = false;
+                    break;
+                }
+            }
+
+            if (canRun) {
+                order.push_back(pid);
+                for (size_t i = 0; i < avl.size(); i++)
+                    avl[i] += alloc[i];
+
+                it = pcs.erase(it);
+                progress = true;
+            } else {
+                ++it;
+            }
+        }
+
+        if (!progress) {
+            std::cerr << "Deadlock detected, cannot continue!\n";
+            break;
+        }
+    }
+
+    return order;
+}
