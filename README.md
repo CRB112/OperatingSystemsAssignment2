@@ -53,11 +53,25 @@ The input matrix is set up as
 2 2 1 2 2 2
 0 0 2 4 3 3
 ```
+
+With initial memory values of: A - 3, B - 2, C - 2, the processes are set up:
 | PROCESS # | ALLOCATED | MAXIMUM |
 |----------|----------|----------|
-| 1 | A:0 B:1 C:0 | A:7 B:5 C:3 |
-| 2 | A:2 B:0 C:0 | A:3 B:2 C:2 |
-| 3 | A:3 B:0 C:2 | A:9 B:0 C:2 |
-| 4 | A:2 B:2 C:1 | A:2 B:2 C:2 |
-| 5 | A:0 B:0 C:2 | A:4 B:3 C:3 |
+| 0 | A:0 B:1 C:0 | A:7 B:5 C:3 |
+| 1 | A:2 B:0 C:0 | A:3 B:2 C:2 |
+| 2 | A:3 B:0 C:2 | A:9 B:0 C:2 |
+| 3 | A:2 B:2 C:1 | A:2 B:2 C:2 |
+| 4 | A:0 B:0 C:2 | A:4 B:3 C:3 |
+
+### PROOF
+Setting up the exact way stated above, and compiling with g++ yields the result  
+<img width="783" height="103" alt="image" src="https://github.com/user-attachments/assets/6efa7bd2-2dad-4789-91e6-7b976dbf8486" />
+Which is, in fact, a safe sequence.  
+
+### FAILURE
+Changing the value of *MAX RESOURCE A* on the fourth process to 12 yields a deadlock
+<img width="700" height="132" alt="image" src="https://github.com/user-attachments/assets/720e1c74-10d4-4132-b0a2-925d3359726c" />
+This means without the fourth process, the sequence IS safe, the output is simply put to aid in finding the process that causes it.
+
+
 
