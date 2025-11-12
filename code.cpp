@@ -17,6 +17,7 @@ int curr = 0;
 
 void start();
 std::vector<int> bankersAlgo();
+void printV(std::vector<int>);
 
 
 int main() {
@@ -28,11 +29,19 @@ int main() {
 
     //Printing
     std::cout << "\nORDER: ";
-    for (int i = 0; i < ord.size(); i++)
-        std::cout << "P" << ord[i] << " ";
+    for (std::vector<int>::iterator it = ord.begin(); it != ord.end(); it++)
+        std::cout << "P" << *it << " ";
     
     std::cout << std::endl << std::endl;
     return 0;
+}
+
+//Was used for debugging ignore
+void printV(std::vector<int> v) {
+    for (std::vector<int>::iterator i = v.begin(); i != v.end(); i++)
+        std::cout << *i;
+    return;
+
 }
 
 //Reads values from input.txt and sets global values accordingly
@@ -91,7 +100,7 @@ std::vector<int> bankersAlgo() {
             //Looks through maxValues of current process to see if it fits
             //Within available resources
             for (size_t i = 0; i < avl.size(); i++) {
-                if (max[i] - alloc[i] > avl[i]) {
+                if (max[i] > avl[i] + alloc[i] ) {
                     canRun = false;
                     break;
                 }
